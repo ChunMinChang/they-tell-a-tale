@@ -32,6 +32,7 @@
   Story.prototype = {
     _storyline: null, // The story tree with videos and prompts information.
     _currentChunk: null, // The current playing chunk.
+    _queue: new Map(), // Contain the preloaded chunk candidates.
     _rootNode: null, // The root DOM node to insert the chunk elements.
     _music: null, // The music played when story goes.
     _bgVideo: null, // The background video that will be played during prompt.
@@ -39,11 +40,10 @@
     init: function(aStartId) {
       log('init: ' + aStartId);
       this._initMusic(this._music);
-      // Load the background video into the DOM tree.
+      // Load the background video into the DOM tree if it exists.
       if (this._bgVideo) {
-        this._bgVideo = (new VideoChunk('bgVideo', this._bgVideo)).element;
-        this._bgVideo.classList.add('background-video');
-        this._rootNode.appendChild(this._bgVideo);
+        this._initBackgroundVideo(this._bgVideo);
+        // this._bgVideo.style.display = 'none'; // Hide it first.
       }
       // Load the beginning chunk into the DOM tree.
       this._currentChunk = this._loadChunk(aStartId);
@@ -57,45 +57,74 @@
 
     _loop: function() {
       log('_loop');
-      if(!this._currentChunk) {
-        log('No chunk for playing. The story is finished.');
+
+      // Clear the preload chunks from the DOM tree and clear the queue.
+      for (let [id, chunk] of this._queue) {
+        removeElement(chunk.element);
+      }
+      this._queue.clear();
+
+      // Check if there is next chunk for playing.
+      if (!this._currentChunk) {
+        log('No chunk for playing. The story is ended.');
         return;
       }
+
+      // Preload the next candidates and push them into queue.
+      if (this._currentChunk.next) {
+        if (typeof this._currentChunk.next === 'string') {
+          this._queue.set(this._currentChunk.next,
+                          this._loadChunk(this._currentChunk.next, true));
+        } else if (typeof this._currentChunk.next === 'object') {
+          for (let option in this._currentChunk.next) {
+             this._queue.set(this._currentChunk.next[option],
+                             this._loadChunk(this._currentChunk.next[option], true));
+          }
+        }
+        assert(this._queue.size, 'Queue should not be empty!');
+      }
+
       // Set the callback fired after ending play.
       this._currentChunk.onEnded = (function(aNextId) {
         log('next chunk: ' + aNextId);
+        // Assign the next chunk and remove it from the queue.
         if (aNextId) {
+          // Take out the next playing chunk from the queue.
+          let nextChunk = this._queue.get(aNextId);
+          assert(nextChunk, 'The next chunk should be in the queue!');
+          this._queue.delete(aNextId);
           // Stop the background video only when the current chunk is prompt and
           // the next is video, so that the background video doesn't stop between
           // two successive prompt chunks.
-          let nextChunk = this._loadChunk(aNextId);
           if (this._bgVideo && !this._currentChunk.isVideo && nextChunk.isVideo) {
             log('Stop the background video.');
             this._bgVideo.pause();
             this._bgVideo.style.display = 'none';
             this._bgVideo.load(); // Reset to beginning.
           }
-          // Remove this chunk element from DOM tree.
+          // Remove the current chunk element from DOM tree
+          // if there is a next chunk element.
           removeElement(this._currentChunk.element);
           this._currentChunk = nextChunk;
         } else {
-          this._bgVideo && this._bgVideo.pause();
+          this._bgVideo && !this._bgVideo.paused && this._bgVideo.pause();
           this._currentChunk = null;
         }
         // Keep looping.
         this._loop();
       }).bind(this);
-      // Play the background video during prompt.
+
+      // Play the background video during prompt if it's not playing.
       if (this._bgVideo && !this._currentChunk.isVideo && this._bgVideo.paused) {
         log('Play the background video.');
         this._bgVideo.style.display = 'block';
         this._bgVideo.play();
       }
-      // Play this chunk.
+
       this._currentChunk.play();
     },
 
-    _loadChunk: function(aChunkId) {
+    _loadChunk: function(aChunkId, aHide) {
       assert(aChunkId, 'No chunk id!');
       let chunk = (this._storyline[aChunkId].source) ?
         new VideoChunk(aChunkId, this._storyline[aChunkId].source,
@@ -103,6 +132,7 @@
         new PromptChunk(aChunkId, this._storyline[aChunkId].text,
                         this._storyline[aChunkId].next,
                         this._storyline[aChunkId].duration);
+      aHide && (chunk.element.style.display = 'none');
       this._rootNode.appendChild(chunk.element);
       return chunk;
     },
@@ -114,6 +144,13 @@
       this._rootNode.appendChild(audio);
       this._music = audio;
     },
+
+    _initBackgroundVideo: function(aSource) {
+      assert(aSource, 'No source for background video!');
+      this._bgVideo = (new VideoChunk('bgVideo', aSource)).element;
+      this._bgVideo.classList.add('background-video');
+      this._rootNode.appendChild(this._bgVideo);
+    },
   };
 
   /*
@@ -123,9 +160,10 @@
   // ------------------------------------
   function Chunk() {}
   Chunk.prototype = {
-    id: null, // The chunk id used only in debugging log.
-    nextId: null, // The id for next chunk.
     element: null, // Return a video element or div element.
+    id: null, // The chunk id used only in debugging log.
+    next: null, // Return next chunk candidates.
+    nextId: null, // The id for next chunk.
     get isVideo() {
       return this.element.tagName.toUpperCase() === 'VIDEO';
     },
@@ -145,13 +183,18 @@
     video.src = aSource;
     video.id = this.id = aId;
     video.classList.add('full-size');
+    video.preload = 'auto'; // Preload the video for better experience!
     this.element = video;
-    this.nextId = aNext;
+    if (aNext) {
+      assert(typeof aNext === 'string', 'Next chunk of video should be a id string');
+      this.next = this.nextId = aNext;
+    }
   }
   VideoChunk.prototype = {
     __proto__: new Chunk(),
     play() {
       log('VideoChunk::play ' + this.id);
+      this.element.style.display = 'block';
       this.element.onended = (function(){
         this.onEnded(this.nextId);
       }).bind(this);
@@ -164,6 +207,7 @@
   function PromptChunk(aId, aText, aOptions, aDuration) {
     assert(aText, 'No prompt text!');
     aDuration && (this._duration = aDuration);
+    this.next = (aOptions) ? aOptions : null;
 
     let prompt = document.createElement('div');
     prompt.classList.add('prompt');
@@ -179,7 +223,7 @@
     textRow.appendChild(textCell);
     table.appendChild(textRow);
     if (typeof aOptions === 'string') {
-      // There is only one option for next chunk, so no need to show choice.
+      // There is no need to show the option if there is only one choice.
       this.nextId = aOptions;
     } else if (typeof aOptions === 'object') {
       let optionRow = document.createElement('div');
@@ -215,6 +259,7 @@
     _duration: 1000, // duration for showing prompt.
     play() {
       log('PromptChunk::play ' + this.id + ' for ' + this._duration + 'ms');
+      this.element.style.display = 'block';
       setTimeout((function() {
         this.onEnded(this.nextId);
       }).bind(this), this._duration);
