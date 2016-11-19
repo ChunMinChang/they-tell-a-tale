@@ -1,0 +1,64 @@
+/* Main
+============================================ */
+body {
+  margin-top: 15vh;
+  background-color: black;
+  color: white;
+  font-family: 'Vollkorn', serif;
+  font-size: 24;
+}
+
+.story {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  width: 60vw;
+  height: 60vh;
+  /* Uncomment for debugging. */
+  /*background: yellow;*/
+}
+
+.full-size {
+  width: 100%;
+  height: auto;
+}
+
+/* Prompt Table
+============================================ */
+.prompt {
+  padding-top: 15%;
+  width: 100%;
+  height: 40%;
+}
+
+.table {
+  display: table;
+  width: 100%;
+  height: 100%;
+
+  text-align: center;
+}
+.row {
+  display: table-row;
+}
+.cell {
+  display: table-cell;
+  width: 50%;
+
+  vertical-align: middle;
+  /* Uncomment for debugging. */
+  /*border:5px solid white;*/
+}
+
+.button {
+  /*cursor: hand;*/
+  cursor: pointer;
+}
+.button:hover {
+  color: gray;
+}
+.button:active {
+  font-weight: bold;
+  font-size: 30;
+}
