@@ -55,3 +55,6 @@ const BEGINNING = 'Intro';
 
 // The file path of the story music.
 const MUSIC = 'music/they-tell-a-tale-preview.mp3';
+
+// The file path of background video shown during prompt.
+const BACKGROUND_VIDEO = 'videos/background.mp4';

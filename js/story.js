@@ -11,13 +11,14 @@
 // const STORYLINE: story tree with settings.
 // const BEGINNING: the entry point of the story.
 // const MUSIC: the source path of the story music.
+// const BACKGROUND_VIDEO: the source path of the background video.
 (function(aExports) {
   var debug = true;
 
   /*
    * Story Player
    * ======================================================== */
-  function Story(aStoryline, aRootNode, aMusicFile) {
+  function Story(aStoryline, aRootNode, aMusicFile, aBackgroundVideo) {
     log('Story constructor');
     assert(aStoryline, 'No settings!');
     this._storyline = aStoryline;
@@ -25,6 +26,7 @@
     this._rootNode = aRootNode;
     assert(aMusicFile, 'No music!');
     this._music = aMusicFile;
+    aBackgroundVideo && (this._bgVideo = aBackgroundVideo);
   }
 
   Story.prototype = {
@@ -33,10 +35,16 @@
     _queue: new Map(), // Contain the preloaded chunk candidates.
     _rootNode: null, // The root DOM node to insert the chunk elements.
     _music: null, // The music played when story goes.
+    _bgVideo: null, // The background video that will be played during prompt.
 
     init: function(aStartId) {
       log('init: ' + aStartId);
       this._initMusic(this._music);
+      // Load the background video into the DOM tree if it exists.
+      if (this._bgVideo) {
+        this._initBackgroundVideo(this._bgVideo);
+        // this._bgVideo.style.display = 'none'; // Hide it first.
+      }
       // Load the beginning chunk into the DOM tree.
       this._currentChunk = this._loadChunk(aStartId);
     },
@@ -81,19 +89,37 @@
         log('next chunk: ' + aNextId);
         // Assign the next chunk and remove it from the queue.
         if (aNextId) {
+          // Take out the next playing chunk from the queue.
+          let nextChunk = this._queue.get(aNextId);
+          assert(nextChunk, 'The next chunk should be in the queue!');
+          this._queue.delete(aNextId);
+          // Stop the background video only when the current chunk is prompt and
+          // the next is video, so that the background video doesn't stop between
+          // two successive prompt chunks.
+          if (this._bgVideo && !this._currentChunk.isVideo && nextChunk.isVideo) {
+            log('Stop the background video.');
+            this._bgVideo.pause();
+            this._bgVideo.style.display = 'none';
+            this._bgVideo.load(); // Reset to beginning.
+          }
           // Remove the current chunk element from DOM tree
           // if there is a next chunk element.
           removeElement(this._currentChunk.element);
-          // Take out the next current chunk from the queue.
-          this._currentChunk = this._queue.get(aNextId);
-          assert(this._currentChunk, 'The next chunk should be in the queue!');
-          this._queue.delete(aNextId);
+          this._currentChunk = nextChunk;
         } else {
+          this._bgVideo && !this._bgVideo.paused && this._bgVideo.pause();
           this._currentChunk = null;
         }
         // Keep looping.
         this._loop();
       }).bind(this);
+
+      // Play the background video during prompt if it's not playing.
+      if (this._bgVideo && !this._currentChunk.isVideo && this._bgVideo.paused) {
+        log('Play the background video.');
+        this._bgVideo.style.display = 'block';
+        this._bgVideo.play();
+      }
 
       this._currentChunk.play();
     },
@@ -118,6 +144,13 @@
       this._rootNode.appendChild(audio);
       this._music = audio;
     },
+
+    _initBackgroundVideo: function(aSource) {
+      assert(aSource, 'No source for background video!');
+      this._bgVideo = (new VideoChunk('bgVideo', aSource)).element;
+      this._bgVideo.classList.add('background-video');
+      this._rootNode.appendChild(this._bgVideo);
+    },
   };
 
   /*
@@ -131,6 +164,9 @@
     id: null, // The chunk id used only in debugging log.
     next: null, // Return next chunk candidates.
     nextId: null, // The id for next chunk.
+    get isVideo() {
+      return this.element.tagName.toUpperCase() === 'VIDEO';
+    },
     onEnded() {
       throw new Error("Not implemented.");
     },
@@ -149,8 +185,10 @@
     video.classList.add('full-size');
     video.preload = 'auto'; // Preload the video for better experience!
     this.element = video;
-    assert(typeof aNext === 'string', 'Next chunk of video should be a id string');
-    this.next = this.nextId = aNext;
+    if (aNext) {
+      assert(typeof aNext === 'string', 'Next chunk of video should be a id string');
+      this.next = this.nextId = aNext;
+    }
   }
   VideoChunk.prototype = {
     __proto__: new Chunk(),
@@ -253,7 +291,7 @@
     // Get the root DOM node to insert our story.
     const rootNode = document.getElementById('story');
     // Set up the story configurations.
-    var story = new Story(STORYLINE, rootNode, MUSIC);
+    var story = new Story(STORYLINE, rootNode, MUSIC, BACKGROUND_VIDEO);
     // Init the music and the first chunk.
     story.init(BEGINNING);
     // Start playing the story.
