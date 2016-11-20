@@ -10,7 +10,6 @@
 }
 
 body {
-  margin-top: 15vh;
   background-color: black;
   color: white;
   font-size: 24px;
@@ -19,12 +18,12 @@ body {
 .story {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%,-50%);
+  top: 20%;
+  transform: translate(-50%,-20%);
   width: 60vw;
   height: 60vh;
   /* Uncomment for debugging. */
-  /*background: yellow;*/
+  /*background: blue;*/
 }
 
 .full-size {
@@ -84,4 +83,38 @@ body {
 
 .chinese {
   font-family: 'cwTeXFangSong', serif;
+}
+
+.footer {
+  position: absolute;;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  margin-top: 33vh; /* Must be greater than or equal to half of story's height */
+  width: 60vw;  /* Same as story's width. */
+
+  font-size: 17px;
+  text-align: center;
+  /* Uncomment for debugging. */
+  /*background: green;*/
+}
+
+.footer .author {
+  margin-top: 3vh;
+  font-size: 14px;
+}
+
+.footer img {
+  height: 4vh;
+  width: auto;
+  padding-right: 5px;
+}
+
+.footer a {
+  text-decoration: none;
+  color: white;
+}
+
+.footer a:hover {
+  color: #CCB162;
 }
