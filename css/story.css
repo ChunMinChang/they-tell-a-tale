@@ -13,7 +13,7 @@ body {
   margin-top: 15vh;
   background-color: black;
   color: white;
-  font-size: 24;
+  font-size: 24px;
 }
 
 .story {
@@ -68,7 +68,7 @@ body {
 }
 .button:active {
   font-weight: bold;
-  font-size: 30;
+  font-size: 30px;
 }
 
 .background-video {
