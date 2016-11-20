@@ -1,5 +1,16 @@
 // The story is composed by many videos and text prompts. The videos and prompts
 // are packaged into chunks, and all the chunks are structured as a tree.
+//
+//         +- D
+//    +- B +
+//    |    +- E
+// A -+
+//    |    +- E (Link to same node is available)
+//    +- C +
+//         +- B (Use same chunk is available)
+//         |
+//         +- A (Loop is available)
+//
 // The storyline goes by one path, depending on user's answers for questions
 // shown during prompt.
 //
@@ -7,11 +18,7 @@
 // Date   : 2016-11-4
 'use strict';
 
-// The below variables are settings imported from source.js.
-// const STORYLINE: story tree with settings.
-// const BEGINNING: the entry point of the story.
-// const MUSIC: the source path of the story music.
-// const BACKGROUND_VIDEO: the source path of the background video.
+// const STORYLINE will be loaded dynamically based on the selected language.
 (function(aExports) {
   var debug = true;
 
@@ -285,17 +292,97 @@
   }
 
   /*
+   * Language Selection
+   * ======================================================== */
+   function createLanguageOptions(aLanguages, onSelected) {
+     let table = document.createElement('div');
+     table.classList.add('table');
+     let row = document.createElement('div');
+     row.classList.add('row');
+     let optionTable = document.createElement('div');
+     optionTable.classList.add('table');
+     for (let lang in aLanguages) {
+       let optionCell = document.createElement('div');
+       optionCell.classList.add('cell');
+       optionCell.style.width = (100 / Object.keys(aLanguages).length) + '%';
+       optionCell.style.fontFamily = aLanguages[lang].font;
+       optionCell.innerHTML = aLanguages[lang].text;
+       optionCell.dataset.lang = lang;
+       optionCell.classList.add('button');
+       optionCell.onclick = onSelect.bind(this);
+       optionTable.appendChild(optionCell);
+       function onSelect(aEvent) {
+         let lang = aEvent.target.dataset.lang;
+         log('Select ' + lang + '(' + aLanguages[lang].text + ')');
+         onSelected(lang);
+       };
+     }
+     row.appendChild(optionTable);
+     table.appendChild(row);
+     return table;
+   }
+
+   function setLanguage(aRootNode, aLanguages) {
+     let matches = navigator.languages.filter(function(aLang) {
+       return Object.keys(aLanguages).indexOf(aLang) > -1;
+     });
+     matches && log('Possible prefered languages: ' + matches);
+     return new Promise(function(aResolve, aReject) {
+       let langOptions = createLanguageOptions(aLanguages, function(aLanguage) {
+         // Set the corresponding font-family for the following story.
+         aRootNode.style.fontFamily = aLanguages[aLanguage].font;
+         removeElement(langOptions);
+         aResolve(aLanguage);
+       });
+       aRootNode.appendChild(langOptions);
+     });
+   }
+
+   function loadStoryline(aLanguage) {
+     return new Promise(function(aResolve, aReject) {
+       let script = document.createElement('script');
+       script.src = 'js/storyline/' + aLanguage + '/source.js';
+       log('load STORYLINE from : ' + script.src);
+       script.onload = function () {
+         assert(STORYLINE, 'STORYLINE should be defined in ' + script.src);
+         aResolve();
+       };
+       document.head.appendChild(script);
+     });
+   }
+
+  /*
    * Start-up
    * ======================================================== */
   function startup() {
     // Get the root DOM node to insert our story.
     const rootNode = document.getElementById('story');
-    // Set up the story configurations.
-    var story = new Story(STORYLINE, rootNode, MUSIC, BACKGROUND_VIDEO);
-    // Init the music and the first chunk.
-    story.init(BEGINNING);
-    // Start playing the story.
-    story.start();
+
+    // The entry point of the story.
+    const beginning = 'Intro';
+    // The file path of the story music.
+    const music = 'music/they-tell-a-tale-preview.mp3';
+    // The file path of background video shown during prompt.
+    const backgroundVideo = 'videos/background.mp4';
+
+    const langs = {
+      'en-US' : {
+        text : 'English',
+        font : '\'Vollkorn\', serif',
+      },
+      'zh-TW' : {
+        text: '中文',
+        font : '\'cwTeXFangSong\', serif', // 仿宋體
+      },
+    };
+    setLanguage(rootNode, langs).then(loadStoryline).then(function() {
+      // Set up the story configurations.
+      var story = new Story(STORYLINE, rootNode, music, backgroundVideo);
+      // Init the music and load the first chunk.
+      story.init(beginning);
+      // Start playing the story.
+      story.start();
+    });
   }
 
   aExports.ready(startup);
