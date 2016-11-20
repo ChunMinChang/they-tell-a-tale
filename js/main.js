@@ -1,7 +1,7 @@
 'use strict';
 
 (function(aExports) {
-  const DEBUG = true;
+  var DEBUG = true;
 
   function debug(aMsg) {
     DEBUG && console.log('[main.js] ' + aMsg);

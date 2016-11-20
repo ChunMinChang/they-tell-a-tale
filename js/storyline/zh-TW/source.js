@@ -1,4 +1,4 @@
-const STORYLINE = {
+var STORYLINE = {
   Intro : {
     text : '曲目 000<br />聽說，有一個這樣的故事...',
     next : 'SecIntro',

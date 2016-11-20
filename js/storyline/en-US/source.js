@@ -1,4 +1,4 @@
-const STORYLINE = {
+var STORYLINE = {
   Intro : {
     text : 'Track 000<br />They Tell a Tale',
     next : 'SecIntro',

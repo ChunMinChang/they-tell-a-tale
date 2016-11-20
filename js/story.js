@@ -18,7 +18,7 @@
 // Date   : 2016-11-4
 'use strict';
 
-// const STORYLINE will be loaded dynamically based on the selected language.
+// var STORYLINE will be loaded dynamically based on the selected language.
 (function(aExports) {
   var debug = true;
 
@@ -66,7 +66,7 @@
       log('_loop');
 
       // Clear the preload chunks from the DOM tree and clear the queue.
-      for (let [id, chunk] of this._queue) {
+      for (var [id, chunk] of this._queue) {
         removeElement(chunk.element);
       }
       this._queue.clear();
@@ -83,7 +83,7 @@
           this._queue.set(this._currentChunk.next,
                           this._loadChunk(this._currentChunk.next, true));
         } else if (typeof this._currentChunk.next === 'object') {
-          for (let option in this._currentChunk.next) {
+          for (var option in this._currentChunk.next) {
              this._queue.set(this._currentChunk.next[option],
                              this._loadChunk(this._currentChunk.next[option], true));
           }
@@ -97,7 +97,7 @@
         // Assign the next chunk and remove it from the queue.
         if (aNextId) {
           // Take out the next playing chunk from the queue.
-          let nextChunk = this._queue.get(aNextId);
+          var nextChunk = this._queue.get(aNextId);
           assert(nextChunk, 'The next chunk should be in the queue!');
           this._queue.delete(aNextId);
           // Stop the background video only when the current chunk is prompt and
@@ -133,7 +133,7 @@
 
     _loadChunk: function(aChunkId, aHide) {
       assert(aChunkId, 'No chunk id!');
-      let chunk = (this._storyline[aChunkId].source) ?
+      var chunk = (this._storyline[aChunkId].source) ?
         new VideoChunk(aChunkId, this._storyline[aChunkId].source,
                        this._storyline[aChunkId].next) :
         new PromptChunk(aChunkId, this._storyline[aChunkId].text,
@@ -146,7 +146,7 @@
 
     _initMusic: function(aSource) {
       assert(aSource, 'No source for audio!');
-      let audio = document.createElement('audio');
+      var audio = document.createElement('audio');
       audio.src = aSource;
       this._rootNode.appendChild(audio);
       this._music = audio;
@@ -186,7 +186,7 @@
   // ------------------------------------
   function VideoChunk(aId, aSource, aNext) {
     assert(aSource, 'No video source!');
-    let video = document.createElement('video');
+    var video = document.createElement('video');
     video.src = aSource;
     video.id = this.id = aId;
     video.classList.add('full-size');
@@ -216,15 +216,15 @@
     aDuration && (this._duration = aDuration);
     this.next = (aOptions) ? aOptions : null;
 
-    let prompt = document.createElement('div');
+    var prompt = document.createElement('div');
     prompt.classList.add('prompt');
     prompt.id = this.id = aId;
 
-    let table = document.createElement('div');
+    var table = document.createElement('div');
     table.classList.add('table');
-    let textRow = document.createElement('div');
+    var textRow = document.createElement('div');
     textRow.classList.add('row');
-    let textCell = document.createElement('div');
+    var textCell = document.createElement('div');
     textCell.classList.add('cell');
     textCell.innerHTML = aText;
     textRow.appendChild(textCell);
@@ -233,24 +233,23 @@
       // There is no need to show the option if there is only one choice.
       this.nextId = aOptions;
     } else if (typeof aOptions === 'object') {
-      let optionRow = document.createElement('div');
+      var optionRow = document.createElement('div');
       optionRow.classList.add('row');
-      let optionTable = document.createElement('div');
+      var optionTable = document.createElement('div');
       optionTable.classList.add('table');
-      for (let key in aOptions) {
-        let optionCell = document.createElement('div');
+      for (var key in aOptions) {
+        var optionCell = document.createElement('div');
         optionCell.classList.add('cell');
         optionCell.style.width = (100 / Object.keys(aOptions).length) + '%';
         optionCell.innerHTML = key;
         optionCell.dataset.key = key;
         optionCell.classList.add('button');
-        optionCell.onclick = onSelect.bind(this);
-        optionTable.appendChild(optionCell);
-        function onSelect(aEvent) {
-          let key = aEvent.target.dataset.key;
+        optionCell.onclick = (function(aEvent) {
+          var key = aEvent.target.dataset.key;
           log(aEvent.type + ' ' + key + '(' + aOptions[key] + ')');
           this.nextId = aOptions[key];
-        };
+        }).bind(this);
+        optionTable.appendChild(optionCell);
       }
       // The default next chunk is the first option.
       this.nextId = aOptions[Object.keys(aOptions)[0]];
@@ -295,26 +294,25 @@
    * Language Selection
    * ======================================================== */
    function createLanguageOptions(aLanguages, onSelected) {
-     let table = document.createElement('div');
+     var table = document.createElement('div');
      table.classList.add('table');
-     let row = document.createElement('div');
+     var row = document.createElement('div');
      row.classList.add('row');
-     let optionTable = document.createElement('div');
+     var optionTable = document.createElement('div');
      optionTable.classList.add('table');
-     for (let lang in aLanguages) {
-       let optionCell = document.createElement('div');
+     for (var lang in aLanguages) {
+       var optionCell = document.createElement('div');
        optionCell.classList.add('cell', aLanguages[lang].class);
        optionCell.style.width = (100 / Object.keys(aLanguages).length) + '%';
        optionCell.innerHTML = aLanguages[lang].text;
        optionCell.dataset.lang = lang;
        optionCell.classList.add('button');
-       optionCell.onclick = onSelect.bind(this);
-       optionTable.appendChild(optionCell);
-       function onSelect(aEvent) {
-         let lang = aEvent.target.dataset.lang;
+       optionCell.onclick = (function(aEvent) {
+         var lang = aEvent.target.dataset.lang;
          log('Select ' + lang + '(' + aLanguages[lang].text + ')');
          onSelected(lang);
-       };
+       }).bind(this);
+       optionTable.appendChild(optionCell);
      }
      row.appendChild(optionTable);
      table.appendChild(row);
@@ -322,12 +320,12 @@
    }
 
    function setLanguage(aRootNode, aLanguages) {
-     let matches = navigator.languages.filter(function(aLang) {
+     var matches = navigator.languages.filter(function(aLang) {
        return Object.keys(aLanguages).indexOf(aLang) > -1;
      });
      matches && log('Possible prefered languages: ' + matches);
      return new Promise(function(aResolve, aReject) {
-       let langOptions = createLanguageOptions(aLanguages, function(aLanguage) {
+       var langOptions = createLanguageOptions(aLanguages, function(aLanguage) {
          // Set the corresponding font-family for the following story.
          aRootNode.classList.add(aLanguages[aLanguage].class);
          removeElement(langOptions);
@@ -339,7 +337,7 @@
 
    function loadStoryline(aLanguage) {
      return new Promise(function(aResolve, aReject) {
-       let script = document.createElement('script');
+       var script = document.createElement('script');
        script.src = 'js/storyline/' + aLanguage + '/source.js';
        log('load STORYLINE from : ' + script.src);
        script.onload = function () {
@@ -355,16 +353,16 @@
    * ======================================================== */
   function startup() {
     // Get the root DOM node to insert our story.
-    const rootNode = document.getElementById('story');
+    var rootNode = document.getElementById('story');
 
     // The entry point of the story.
-    const beginning = 'Intro';
+    var beginning = 'Intro';
     // The file path of the story music.
-    const music = 'music/they-tell-a-tale-preview.mp3';
+    var music = 'music/they-tell-a-tale-preview.mp3';
     // The file path of background video shown during prompt.
-    const backgroundVideo = 'videos/background.mp4';
+    var backgroundVideo = 'videos/background.mp4';
 
-    const langs = {
+    var langs = {
       'en-US' : {
         text : 'English',
         class : 'english',
