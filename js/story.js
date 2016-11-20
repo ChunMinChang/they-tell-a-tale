@@ -303,9 +303,8 @@
      optionTable.classList.add('table');
      for (let lang in aLanguages) {
        let optionCell = document.createElement('div');
-       optionCell.classList.add('cell');
+       optionCell.classList.add('cell', aLanguages[lang].class);
        optionCell.style.width = (100 / Object.keys(aLanguages).length) + '%';
-       optionCell.style.fontFamily = aLanguages[lang].font;
        optionCell.innerHTML = aLanguages[lang].text;
        optionCell.dataset.lang = lang;
        optionCell.classList.add('button');
@@ -330,7 +329,7 @@
      return new Promise(function(aResolve, aReject) {
        let langOptions = createLanguageOptions(aLanguages, function(aLanguage) {
          // Set the corresponding font-family for the following story.
-         aRootNode.style.fontFamily = aLanguages[aLanguage].font;
+         aRootNode.classList.add(aLanguages[aLanguage].class);
          removeElement(langOptions);
          aResolve(aLanguage);
        });
@@ -368,11 +367,11 @@
     const langs = {
       'en-US' : {
         text : 'English',
-        font : '\'Vollkorn\', serif',
+        class : 'english',
       },
       'zh-TW' : {
         text: '中文',
-        font : '\'cwTeXFangSong\', serif', // 仿宋體
+        class : 'chinese',
       },
     };
     setLanguage(rootNode, langs).then(loadStoryline).then(function() {
