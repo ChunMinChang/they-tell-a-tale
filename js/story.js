@@ -384,5 +384,9 @@
     });
   }
 
-  aExports.ready(startup);
+  if (aExports.isMobile.any) {
+    aExports.location.href = './mobile/index.html'
+  } else {
+    aExports.ready(startup);
+  }
 }(window));
