@@ -69,30 +69,10 @@
     _loop: function() {
       log('_loop');
 
-      // Clear the preload chunks from the DOM tree and clear the queue.
-      for (var [id, chunk] of this._queue) {
-        removeElement(chunk.element);
-      }
-      this._queue.clear();
-
       // Check if there is next chunk for playing.
       if (!this._currentChunk) {
         log('No chunk for playing. The story is ended.');
         return;
-      }
-
-      // Preload the next candidates and push them into queue.
-      if (this._currentChunk.next) {
-        if (typeof this._currentChunk.next === 'string') {
-          this._queue.set(this._currentChunk.next,
-                          this._loadChunk(this._currentChunk.next, true));
-        } else if (typeof this._currentChunk.next === 'object') {
-          for (var option in this._currentChunk.next) {
-             this._queue.set(this._currentChunk.next[option],
-                             this._loadChunk(this._currentChunk.next[option], true));
-          }
-        }
-        assert(this._queue.size, 'Queue should not be empty!');
       }
 
       // Set the callback fired after ending play.
@@ -113,11 +93,11 @@
             this._bgVideo.style.display = 'none';
             this._bgVideo.load(); // Reset to beginning.
           }
-          // Remove the current chunk element from DOM tree
-          // if there is a next chunk element.
+          // Remove the current chunk element from DOM tree.
           removeElement(this._currentChunk.element);
           this._currentChunk = nextChunk;
         } else {
+          assert(!this._queue.size, 'Queue should be empty!');
           this._bgVideo && !this._bgVideo.paused && this._bgVideo.pause();
           this._currentChunk = null;
         }
@@ -133,6 +113,26 @@
       }
 
       this._currentChunk.play();
+
+      // Clear the preload chunks from the DOM tree and clear the queue.
+      for (var [id, chunk] of this._queue) {
+        removeElement(chunk.element);
+      }
+      this._queue.clear();
+
+      // Preload the next candidates and push them into queue.
+      if (this._currentChunk.next) {
+        if (typeof this._currentChunk.next === 'string') {
+          this._queue.set(this._currentChunk.next,
+                          this._loadChunk(this._currentChunk.next, true));
+        } else if (typeof this._currentChunk.next === 'object') {
+          for (var option in this._currentChunk.next) {
+             this._queue.set(this._currentChunk.next[option],
+                             this._loadChunk(this._currentChunk.next[option], true));
+          }
+        }
+        assert(this._queue.size, 'Queue should not be empty!');
+      }
     },
 
     _loadChunk: function(aChunkId, aHide) {
