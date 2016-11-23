@@ -194,7 +194,8 @@
     video.src = aSource;
     video.id = this.id = aId;
     video.classList.add('full-size');
-    video.preload = 'auto'; // Preload the video for better experience!
+    // 'auto' might cause video to be blocked, so we use 'metadata' instead.
+    video.preload = 'metadata';
     this.element = video;
     if (aNext) {
       assert(typeof aNext === 'string', 'Next chunk of video should be a id string');
