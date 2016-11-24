@@ -15,6 +15,13 @@
 你來決定吧。" />
 	<meta property="og:image"         content="http://tzchien.com/images/icon-300-tiny.png" />
   <meta property="fb:app_id" content="355725254781143">
+  <!-- Borrow from https://github.com/kaimallea/isMobile -->
+  <script type='text/javascript' src='../js/isMobile.js'></script>
+  <script>
+    if (!window.isMobile.any) {
+      window.location.href = './../';
+    }
+  </script>
   <style>
     @import url('https://fonts.googleapis.com/css?family=Vollkorn');
     @import url(http://fonts.googleapis.com/earlyaccess/cwtexfangsong.css); /* 仿宋體 */
