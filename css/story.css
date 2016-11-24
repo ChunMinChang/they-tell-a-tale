@@ -62,6 +62,7 @@ body {
 }
 .button:active {
   font-weight: bold;
+  color: #CCB162;
   font-size: 30px;
 }
 

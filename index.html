@@ -6,6 +6,16 @@
 <head>
   <meta charset="UTF-8">
   <title>They Tell a Tale</title>
+  <!-- You can use open graph tags to customize link previews.
+    Learn more: https://developers.facebook.com/docs/sharing/webmasters -->
+	<meta property="og:url"           content="http://tzchien.com/" />
+	<meta property="og:type"          content="website" />
+	<meta property="og:title"         content="TzChien慈謙 - They Tell a Tale 聽說，有一個這樣的故事..." />
+	<meta property="og:description"   content="[ 生而為人的故事 Life as an Individual ] 前傳：一棟房子，兩個相似的人。誰愛誰比較多，誰傷害誰比較多...
+你來決定吧。" />
+	<meta property="og:image"         content="http://tzchien.com/images/icon-300-tiny.png" />
+  <meta property="fb:app_id" content="355725254781143">
+
   <!-- Borrow from https://github.com/kaimallea/isMobile -->
   <script type='text/javascript' src='js/isMobile.js'></script>
   <script type='text/javascript' src='js/main.js'></script>
@@ -20,6 +30,26 @@
   <!-- <script src="js/storyline/en-US/source.js"></script> -->
 </head>
 <body>
+  <!-- For Facebook Like/Share buttons -->
+  <div id="fb-root"></div>
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '355725254781143',
+        xfbml      : true,
+        version    : 'v2.8'
+      });
+    };
+
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
+
   <div id='story' class='story'>
     <!-- Language options -->
     <!-- <div class='table'>
@@ -71,6 +101,16 @@
       <a target='_blank' href='https://www.facebook.com/tzchienfans/'>
         TzChien<span class='chinese'>慈謙</span>
       </a>
+    </div>
+    <div style="padding-left: 20vw">
+      <div class="fb-like"
+           data-href="http://tzchien.com/"
+           data-layout="standard"
+           data-action="like"
+           data-size="small"
+           data-show-faces="true"
+           data-share="true">
+      </div>
     </div>
     <div class='author'>
       <img src='images/fren.png'>
