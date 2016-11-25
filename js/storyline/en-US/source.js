@@ -9,7 +9,7 @@ var STORYLINE = {
     duration : 6000,
   },
   SecIntro : {
-    text : 'Remember, we hurt because we love.',
+    text : 'We hurt because we loved. Don\'t you forget...',
     next : 'Start',
     duration : 4500,
   },
