@@ -142,7 +142,8 @@
                        this._storyline[aChunkId].next) :
         new PromptChunk(aChunkId, this._storyline[aChunkId].text,
                         this._storyline[aChunkId].next,
-                        this._storyline[aChunkId].duration);
+                        this._storyline[aChunkId].duration,
+                        this._storyline[aChunkId].share);
       aHide && (chunk.element.style.display = 'none');
       this._rootNode.appendChild(chunk.element);
       return chunk;
@@ -216,7 +217,7 @@
 
   // Prompt Chunk Class
   // ------------------------------------
-  function PromptChunk(aId, aText, aOptions, aDuration) {
+  function PromptChunk(aId, aText, aOptions, aDuration, aShare) {
     assert(aText, 'No prompt text!');
     aDuration && (this._duration = aDuration);
     this.next = (aOptions) ? aOptions : null;
@@ -260,6 +261,17 @@
       this.nextId = aOptions[Object.keys(aOptions)[0]];
       optionRow.appendChild(optionTable);
       table.appendChild(optionRow);
+    }
+    if (aShare) {
+      var buttonRow = document.createElement('div');
+      buttonRow.classList.add('row');
+      var buttonCell = document.createElement('div');
+      buttonCell.classList.add('cell');
+      var button = createShareButton();
+      buttonCell.appendChild(button);
+      setFacebookFeed(buttonCell, aShare);
+      buttonRow.appendChild(buttonCell);
+      table.appendChild(buttonRow);
     }
 
     prompt.appendChild(table);
@@ -354,6 +366,51 @@
    }
 
   /*
+   * Facebook Feed Button
+   * ======================================================== */
+  function createShareButton() {
+    var image = document.createElement('img');
+    image.classList.add('button', 'facebook-share');
+    image.src = 'images/facebook-share.svg';
+    return image;
+  }
+
+  // The facebook-jssdk must be loaded in index.html and FB.init must be called.
+  function facebookFeed(aInfo) {
+    FB.ui({
+      method: 'feed',
+      link: 'http://tzchien.com/',
+      name: 'They Tell a Tale',
+      description: aInfo.description,
+      picture: aInfo.picture,
+      caption: '生而為人的故事 Life as an Individual',
+    }, function(response){});
+  }
+
+  function setFacebookFeedInternal(aObject, aInfo, aTimes) {
+    if (FB) {
+      log("FB is initialized! Share the result: " + aInfo.description);
+      aObject.onclick = function() { facebookFeed(aInfo); };
+      return;
+    }
+    // If the FB is initialized in 10 seconds, then we set the callback to it.
+    if (aTimes > 20) {
+      log("No FB initialized! Set share button to default setting!");
+      aObject.onclick = function () {
+        window.open('https://www.facebook.com/sharer/sharer.php?u=http%3A//tzchien.com/');
+      };
+      return;
+    }
+    setTimeout(function() {
+      setFacebookFeedInternal(aObject, aInfo, aTimes + 1);
+    }, 500);
+  }
+
+  function setFacebookFeed(aObject, aInfo) {
+    setFacebookFeedInternal(aObject, aInfo, 0);
+  }
+
+  /*
    * Start-up
    * ======================================================== */
   function startup() {
@@ -363,7 +420,7 @@
     // The entry point of the story.
     var beginning = 'Intro';
     // The file path of the story music.
-    var music = 'music/they-tell-a-tale-preview.mp3';
+    var music = 'music/they-tell-a-tale.mp3';
     // The file path of background video shown during prompt.
     var backgroundVideo = 'videos/background.mp4';
 

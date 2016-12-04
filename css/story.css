@@ -70,3 +70,9 @@ body {
   position: absolute;
   z-index: -1;
 }
+
+.facebook-share {
+  padding-top: 10%;
+  width: 10%;
+  height: auto;
+}
