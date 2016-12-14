@@ -263,6 +263,8 @@ var STORYLINE = {
     share : {
       description : 'I\'ve told the tale. Then comes "Over the sea, there will be a glorious city." - The City Waltz',
       picture : 'http://tzchien.com/images/the-city-waltz.png',
+      // hashtag : '#我說了我的故事接下來是TheCityWaltz',
+      hashtag : '#我說了我的故事',
     },
   },
   End002 : {
@@ -271,6 +273,8 @@ var STORYLINE = {
     share : {
       description : 'I\'ve told the tale. Then comes "Your life chose you at the very beginning." - The Floor Sample',
       picture : 'http://tzchien.com/images/the-floor-sample.png',
+      // hashtag : '#我說了我的故事接下來是TheFloorSample',
+      hashtag : '#我說了我的故事',
     },
   },
   End003 : {
@@ -279,6 +283,8 @@ var STORYLINE = {
     share : {
       description : 'I\'ve told the tale. Then comes "If you\'re picked, then run from reality." - Black Sheep',
       picture : 'http://tzchien.com/images/black-sheep.png',
+      // hashtag : '#我說了我的故事接下來是BlackSheep',
+      hashtag : '#我說了我的故事',
     },
   },
   End004 : {
@@ -287,6 +293,8 @@ var STORYLINE = {
     share : {
       description : 'I\'ve told the tale. Then comes "To break free, I fade in the wind." - Floating',
       picture : 'http://tzchien.com/images/floating.png',
+      // hashtag : '#我說了我的故事接下來是Floating',
+      hashtag : '#我說了我的故事',
     },
   },
 };

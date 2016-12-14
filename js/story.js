@@ -180,10 +180,10 @@
       return this.element.tagName.toUpperCase() === 'VIDEO';
     },
     onEnded() {
-      throw new Error("Not implemented.");
+      throw new Error('Not implemented.');
     },
     play() {
-      throw new Error("Not implemented.");
+      throw new Error('Not implemented.');
     },
   };
 
@@ -269,7 +269,7 @@
       buttonCell.classList.add('cell');
       var button = createShareButton();
       buttonCell.appendChild(button);
-      setFacebookFeed(buttonCell, aShare);
+      setfacebookShare(buttonCell, aShare);
       buttonRow.appendChild(buttonCell);
       table.appendChild(buttonRow);
     }
@@ -299,7 +299,7 @@
   function assert(aCondition, aMsg) {
     // console.assert(aCondition, aMsg);
     if (!aCondition) {
-      throw ('[Story] ' + aMsg) || "Assertion failed";
+      throw ('[Story] ' + aMsg) || 'Assertion failed';
     }
   }
 
@@ -376,38 +376,41 @@
   }
 
   // The facebook-jssdk must be loaded in index.html and FB.init must be called.
-  function facebookFeed(aInfo) {
+  function facebookShare(aInfo) {
     FB.ui({
-      method: 'feed',
-      link: 'http://tzchien.com/',
-      name: 'They Tell a Tale',
-      description: aInfo.description,
+      app_id: '355725254781143',
+      method: 'share',
+      display: 'popup',
+      href: 'http://tzchien.com/',
+      title: 'They Tell a Tale',
       picture: aInfo.picture,
+      description: aInfo.description,
+      hashtag: aInfo.hashtag,
       caption: '生而為人的故事 Life as an Individual',
     }, function(response){});
   }
 
-  function setFacebookFeedInternal(aObject, aInfo, aTimes) {
+  function setfacebookShareInternal(aObject, aInfo, aTimes) {
     if (FB) {
-      log("FB is initialized! Share the result: " + aInfo.description);
-      aObject.onclick = function() { facebookFeed(aInfo); };
+      log('FB is initialized! Share the result: ' + aInfo.description);
+      aObject.onclick = function() { facebookShare(aInfo); };
       return;
     }
     // If the FB is initialized in 10 seconds, then we set the callback to it.
     if (aTimes > 20) {
-      log("No FB initialized! Set share button to default setting!");
+      log('No FB initialized! Set share button to default setting!');
       aObject.onclick = function () {
         window.open('https://www.facebook.com/sharer/sharer.php?u=http%3A//tzchien.com/');
       };
       return;
     }
     setTimeout(function() {
-      setFacebookFeedInternal(aObject, aInfo, aTimes + 1);
+      setfacebookShareInternal(aObject, aInfo, aTimes + 1);
     }, 500);
   }
 
-  function setFacebookFeed(aObject, aInfo) {
-    setFacebookFeedInternal(aObject, aInfo, 0);
+  function setfacebookShare(aObject, aInfo) {
+    setfacebookShareInternal(aObject, aInfo, 0);
   }
 
   /*

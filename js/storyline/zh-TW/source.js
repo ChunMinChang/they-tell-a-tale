@@ -263,6 +263,8 @@ var STORYLINE = {
     share : {
       description : '我說了我的故事，接下來是「海的另一邊，有一座偉大的城市。」- 城市圓舞曲',
       picture : 'http://tzchien.com/images/the-city-waltz-chinese.png',
+      // hashtag : '#我說了我的故事接下來是城市圓舞曲',
+      hashtag : '#我說了我的故事',
     },
   },
   End002 : {
@@ -274,6 +276,8 @@ var STORYLINE = {
     share : {
       description : '我說了我的故事，接下來是「你的人生早在一開始就決定好了。」- The Floor Sample',
       picture : 'http://tzchien.com/images/the-floor-sample-chinese.png',
+      // hashtag : '#我說了我的故事接下來是TheFloorSample',
+      hashtag : '#我說了我的故事',
     },
   },
   End003 : {
@@ -285,6 +289,8 @@ var STORYLINE = {
     share : {
       description : '我說了我的故事，接下來是「如果被盯上了，就全力奔跑吧。」- Black Sheep',
       picture : 'http://tzchien.com/images/black-sheep-chinese.png',
+      // hashtag : '#我說了我的故事接下來是BlackSheep',
+      hashtag : '#我說了我的故事',
     },
   },
   End004 : {
@@ -293,6 +299,8 @@ var STORYLINE = {
     share : {
       description : '我說了我的故事，接下來是「為了自由，我消逝風中。」- 飄浮',
       picture : 'http://tzchien.com/images/floating-chinese.png',
+      // hashtag : '#我說了我的故事接下來是飄浮',
+      hashtag : '#我說了我的故事',
     },
   },
 };
