@@ -1,12 +1,11 @@
 # They Tell a Tale
-This is a same-name project of _TzChien慈謙_'s song, _They Tell a Tale_,
+This is a same-name project of [_TzChien慈謙_](http://tzchien.com/)'s song, _They Tell a Tale_,
 for designing an __interactive__ MV.
-You can see the [demo here](https://chunminchang.github.io/they-tell-a-tale/).
+You can see the short [demo here](https://chunminchang.github.io/they-tell-a-tale/). For the whole story, please go [tzchien.com](http://tzchien.com/albums/Life-as-an-Individual/they-tell-a-tale/) to experience it.
 
 The interactive MV is composed by several video pieces and questions prompted
 to audiences. The story of MV varies from person to person,
-depending on the user's answer.
-Please go [tzchien.com](http://tzchien.com/) to experience it.
+depending on the user's answers.
 
 ## How to compose your own MV
 You need to structure the storyline as a __tree__.
