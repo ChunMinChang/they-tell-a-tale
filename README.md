@@ -83,4 +83,4 @@ Please see the [story.js](js/story.js) and following source.js
 _ffmpeg.sh_ is used to convert video files into _MP4_ format.
 Put _ffmpeg.sh_ with all the videos that need to be converted into a folder,
 then go to the folder and run ```bash ffmpeg.sh```.
-The _MP4_ videos will be created after the script is finished.
+The _MP4_ videos will be created after running the script.
